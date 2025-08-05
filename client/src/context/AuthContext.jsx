@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Set axios base URL
-  axios.defaults.baseURL = 'http://localhost:5000/api';
+  axios.defaults.baseURL = '/api';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
