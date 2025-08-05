@@ -17,7 +17,31 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Set axios base URL
-    axios.defaults.baseURL = '/api';
+    axios.defaults.baseURL = 'http://localhost:5000/api';
+    
+    // Add request interceptor for debugging
+    axios.interceptors.request.use(
+      (config) => {
+        console.log('Making request:', config.method?.toUpperCase(), config.url);
+        return config;
+      },
+      (error) => {
+        console.error('Request error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor for debugging
+    axios.interceptors.response.use(
+      (response) => {
+        console.log('Response received:', response.status, response.config.url);
+        return response;
+      },
+      (error) => {
+        console.error('Response error:', error.response?.status, error.response?.data || error.message);
+        return Promise.reject(error);
+      }
+    );
     
     const token = localStorage.getItem('token');
     if (token) {
@@ -30,16 +54,18 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error('Error parsing user data:', error);
           localStorage.removeItem('user');
+          localStorage.removeItem('token');
         }
       }
       
       // Verify token is still valid
       axios.get('/tasks')
         .then(() => {
-          // Token is valid, user is already set above
+          console.log('Token is valid');
         })
-        .catch(() => {
+        .catch((error) => {
           console.log('Token invalid, clearing auth data');
+          console.error('Token validation error:', error);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           delete axios.defaults.headers.common['Authorization'];
@@ -47,12 +73,14 @@ export const AuthProvider = ({ children }) => {
         })
         .finally(() => setLoading(false));
     } else {
+      console.log('No token found');
       setLoading(false);
     }
   }, []);
 
   const login = async (email, password) => {
     try {
+      console.log('Attempting login for:', email);
       const response = await axios.post('/auth/login', { email, password });
       const { token, user } = response.data;
       
@@ -61,18 +89,20 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
       
+      console.log('Login successful');
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+        message: error.response?.data?.message || error.message || 'Login failed' 
       };
     }
   };
 
   const register = async (name, email, password) => {
     try {
+      console.log('Attempting registration for:', email);
       const response = await axios.post('/auth/register', { name, email, password });
       const { token, user } = response.data;
       
@@ -81,17 +111,19 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
       
+      console.log('Registration successful');
       return { success: true };
     } catch (error) {
       console.error('Registration error:', error);
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Registration failed' 
+        message: error.response?.data?.message || error.message || 'Registration failed' 
       };
     }
   };
 
   const logout = () => {
+    console.log('Logging out user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];

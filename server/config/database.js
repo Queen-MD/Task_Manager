@@ -43,6 +43,8 @@ const dbAll = (sql, params = []) => {
 // Create tables if they don't exist
 const createTables = async () => {
   try {
+    console.log('Creating database tables...');
+    
     // Users table
     await dbRun(`
       CREATE TABLE IF NOT EXISTS users (
@@ -73,20 +75,39 @@ const createTables = async () => {
     // Create admin user if doesn't exist
     const adminExists = await dbGet('SELECT * FROM users WHERE email = ?', [process.env.ADMIN_EMAIL || 'admin@example.com']);
     if (!adminExists) {
+      console.log('Creating admin user...');
       const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
       await dbRun(
         'INSERT INTO users (name, email, password, is_admin) VALUES (?, ?, ?, ?)',
         ['Admin', process.env.ADMIN_EMAIL || 'admin@example.com', hashedPassword, 1]
       );
+      console.log('Admin user created successfully');
+    } else {
+      console.log('Admin user already exists');
+    }
+
+    // Create a demo user if doesn't exist
+    const demoUserExists = await dbGet('SELECT * FROM users WHERE email = ?', ['user@example.com']);
+    if (!demoUserExists) {
+      console.log('Creating demo user...');
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('user123', 10);
+      await dbRun(
+        'INSERT INTO users (name, email, password, is_admin) VALUES (?, ?, ?, ?)',
+        ['Demo User', 'user@example.com', hashedPassword, 0]
+      );
+      console.log('Demo user created successfully');
     }
 
     console.log('Database tables created successfully');
   } catch (error) {
     console.error('Error creating tables:', error);
+    throw error;
   }
 };
 
-createTables();
+// Initialize database
+createTables().catch(console.error);
 
 module.exports = { db, dbRun, dbGet, dbAll };
