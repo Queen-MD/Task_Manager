@@ -15,23 +15,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Set axios base URL
-  axios.defaults.baseURL = '/api';
-
   useEffect(() => {
+    // Set axios base URL
+    axios.defaults.baseURL = '/api';
+    
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Verify token validity by making a request
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('user');
+        }
+      }
+      
+      // Verify token is still valid
       axios.get('/tasks')
         .then(() => {
-          const userData = JSON.parse(localStorage.getItem('user'));
-          setUser(userData);
+          // Token is valid, user is already set above
         })
         .catch(() => {
+          console.log('Token invalid, clearing auth data');
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           delete axios.defaults.headers.common['Authorization'];
+          setUser(null);
         })
         .finally(() => setLoading(false));
     } else {
@@ -51,6 +63,7 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error);
       return { 
         success: false, 
         message: error.response?.data?.message || 'Login failed' 
@@ -70,6 +83,7 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
+      console.error('Registration error:', error);
       return { 
         success: false, 
         message: error.response?.data?.message || 'Registration failed' 
