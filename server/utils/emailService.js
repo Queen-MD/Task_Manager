@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
-const pool = require('../config/database');
+const { dbAll } = require('../config/database');
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
   secure: false,
@@ -35,14 +35,14 @@ cron.schedule('0 9 * * *', async () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     
-    const dueTasks = await pool.query(`
+    const dueTasks = await dbAll(`
       SELECT t.title, t.due_date, u.email 
       FROM tasks t 
       JOIN users u ON t.user_id = u.id 
-      WHERE t.due_date = $1 AND t.status = 'pending'
+      WHERE t.due_date = ? AND t.status = 'pending'
     `, [tomorrow.toISOString().split('T')[0]]);
 
-    for (const task of dueTasks.rows) {
+    for (const task of dueTasks) {
       await sendDueDateReminder(task.email, task.title, task.due_date);
     }
   } catch (error) {

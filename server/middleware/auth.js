@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+const { dbGet } = require('../config/database');
 
 const auth = async (req, res, next) => {
   try {
@@ -9,14 +9,14 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await pool.query('SELECT id, name, email, is_admin FROM users WHERE id = $1', [decoded.id]);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const user = await dbGet('SELECT id, name, email, is_admin FROM users WHERE id = ?', [decoded.id]);
     
-    if (user.rows.length === 0) {
+    if (!user) {
       return res.status(401).json({ message: 'Invalid token.' });
     }
 
-    req.user = user.rows[0];
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Invalid token.' });
