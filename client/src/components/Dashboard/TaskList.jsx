@@ -3,12 +3,12 @@ import { CheckCircle, Circle, Edit, Trash2, Calendar, Clock } from 'lucide-react
 const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-          <CheckCircle className="h-12 w-12 text-gray-400" />
+      <div className="text-center py-16">
+        <div className="mx-auto h-32 w-32 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+          <CheckCircle className="h-16 w-16 text-blue-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks found</h3>
-        <p className="text-gray-500">Create your first task to get started!</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">No tasks found</h3>
+        <p className="text-gray-500 text-lg">Create your first task to get started on your productivity journey!</p>
       </div>
     );
   }
@@ -28,32 +28,37 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {tasks.map((task) => (
         <div
           key={task.id}
-          className={`card hover:shadow-md transition-shadow ${
-            task.status === 'completed' ? 'opacity-75' : ''
+          className={`group relative bg-white rounded-xl shadow-sm border border-gray-200/50 p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 ${
+            task.status === 'completed' ? 'opacity-75 bg-gradient-to-br from-green-50 to-emerald-50' : 'hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50'
           }`}
         >
+          {/* Status indicator */}
+          <div className={`absolute top-4 right-4 w-3 h-3 rounded-full ${
+            task.status === 'completed' ? 'bg-green-400' : 'bg-yellow-400'
+          }`}></div>
+          
           <div className="flex items-start space-x-4">
             <button
               onClick={() => onToggleStatus(task)}
-              className={`mt-1 flex-shrink-0 transition-colors ${
+              className={`mt-1 flex-shrink-0 transition-all duration-200 transform hover:scale-110 ${
                 task.status === 'completed'
-                  ? 'text-green-600 hover:text-green-700'
-                  : 'text-gray-400 hover:text-primary-600'
+                  ? 'text-green-600 hover:text-green-700 drop-shadow-sm'
+                  : 'text-gray-400 hover:text-blue-600'
               }`}
             >
               {task.status === 'completed' ? (
-                <CheckCircle className="h-5 w-5" />
+                <CheckCircle className="h-6 w-6" />
               ) : (
-                <Circle className="h-5 w-5" />
+                <Circle className="h-6 w-6" />
               )}
             </button>
 
             <div className="flex-1 min-w-0">
-              <h3 className={`text-lg font-medium ${
+              <h3 className={`text-lg font-semibold mb-2 ${
                 task.status === 'completed' 
                   ? 'text-gray-500 line-through' 
                   : 'text-gray-900'
@@ -71,42 +76,44 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
                 </p>
               )}
 
-              <div className="mt-3 flex items-center space-x-4 text-xs text-gray-500">
+              <div className="mt-4 flex flex-col space-y-2 text-xs text-gray-500">
                 <div className="flex items-center space-x-1">
                   <Clock className="h-3 w-3" />
                   <span>Created {formatDate(task.created_at)}</span>
                 </div>
                 
                 {task.due_date && (
-                  <div className={`flex items-center space-x-1 ${
+                  <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
                     isOverdue(task.due_date) && task.status !== 'completed'
-                      ? 'text-red-600' 
-                      : ''
+                      ? 'bg-red-100 text-red-700' 
+                      : 'bg-blue-100 text-blue-700'
                   }`}>
                     <Calendar className="h-3 w-3" />
                     <span>Due {formatDate(task.due_date)}</span>
                     {isOverdue(task.due_date) && task.status !== 'completed' && (
-                      <span className="text-red-600 font-medium">(Overdue)</span>
+                      <span className="font-semibold">(Overdue)</span>
                     )}
                   </div>
                 )}
               </div>
 
-              <div className="mt-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              <div className="mt-4">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
                   task.status === 'completed'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
+                    ? 'bg-green-100 text-green-800 ring-1 ring-green-200'
+                    : 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-200'
                 }`}>
                   {task.status === 'completed' ? 'Completed' : 'Pending'}
                 </span>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center space-x-2">
+          {/* Action buttons */}
+          <div className="absolute bottom-4 right-4 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button
                 onClick={() => onEditTask(task)}
-                className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 transform hover:scale-110"
                 title="Edit task"
               >
                 <Edit className="h-4 w-4" />
@@ -114,12 +121,11 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
               
               <button
                 onClick={() => onDeleteTask(task.id)}
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 transform hover:scale-110"
                 title="Delete task"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
-            </div>
           </div>
         </div>
       ))}

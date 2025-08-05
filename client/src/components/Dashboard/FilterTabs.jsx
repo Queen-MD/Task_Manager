@@ -6,27 +6,29 @@ const FilterTabs = ({ activeFilter, onFilterChange, taskCounts }) => {
   ];
 
   return (
-    <div className="mb-6">
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
+    <div className="mb-8">
+      <div className="bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-gray-200/50">
+        <nav className="flex space-x-1">
           {filters.map((filter) => (
             <button
               key={filter.key}
               onClick={() => onFilterChange(filter.key)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeFilter === filter.key
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
               }`}
             >
-              {filter.label}
-              <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                activeFilter === filter.key
-                  ? 'bg-primary-100 text-primary-600'
-                  : 'bg-gray-100 text-gray-600'
-              }`}>
-                {filter.count}
-              </span>
+              <div className="flex items-center justify-center space-x-2">
+                <span>{filter.label}</span>
+                <span className={`py-0.5 px-2 rounded-full text-xs font-semibold ${
+                  activeFilter === filter.key
+                    ? 'bg-white/20 text-white'
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {filter.count}
+                </span>
+              </div>
             </button>
           ))}
         </nav>
