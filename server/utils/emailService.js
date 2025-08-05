@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 const { dbAll } = require('../config/database');
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
   secure: false,
