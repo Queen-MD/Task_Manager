@@ -4,11 +4,8 @@
   "description": "Full Stack Task Manager Application",
   "main": "server/index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon index.js",
-    "client": "cd ../client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "node server/index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
