@@ -5,6 +5,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import AdminPanel from './components/Admin/AdminPanel';
+import { useEffect } from 'react';
 
 // Loading component
 function LoadingSpinner() {
@@ -19,6 +20,10 @@ function LoadingSpinner() {
 }
 
 function App() {
+  useEffect(() => {
+    console.log('App component mounted');
+  }, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>

@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Set axios base URL
-    axios.defaults.baseURL = 'http://localhost:5000/api';
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    axios.defaults.baseURL = API_BASE_URL;
     
     // Add request interceptor for debugging
     axios.interceptors.request.use(
@@ -64,12 +65,13 @@ export const AuthProvider = ({ children }) => {
           console.log('Token is valid');
         })
         .catch((error) => {
-          console.log('Token invalid, clearing auth data');
-          console.error('Token validation error:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          delete axios.defaults.headers.common['Authorization'];
-          setUser(null);
+          if (error.response?.status === 401) {
+            console.log('Token invalid, clearing auth data');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            delete axios.defaults.headers.common['Authorization'];
+            setUser(null);
+          }
         })
         .finally(() => setLoading(false));
     } else {
