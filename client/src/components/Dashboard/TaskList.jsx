@@ -75,7 +75,7 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
         return (
           <div
             key={task.id}
-            className={`task-card bg-gradient-to-br ${getPriorityColor(task.due_date, task.status)} animate-fade-in`}
+            className={`group task-card bg-gradient-to-br ${getPriorityColor(task.due_date, task.status)} animate-fade-in`}
             style={{ animationDelay: `${index * 0.1}s` }}
             onMouseEnter={() => setHoveredTask(task.id)}
             onMouseLeave={() => setHoveredTask(null)}
