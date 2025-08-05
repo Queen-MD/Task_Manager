@@ -7,23 +7,23 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-20">
-        <div className="mx-auto h-32 w-32 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mb-8 shadow-2xl floating-element">
-          <CheckCircle className="h-16 w-16 text-blue-500" />
+        <div className="mx-auto h-32 w-32 bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full flex items-center justify-center mb-8 shadow-2xl floating-element">
+          <CheckCircle className="h-16 w-16 text-blue-500 dark:text-blue-400" />
         </div>
         <h3 className="text-2xl font-bold gradient-text mb-4">No tasks found</h3>
-        <p className="text-gray-500 text-lg max-w-md mx-auto leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
           Ready to boost your productivity? Create your first task and start achieving your goals!
         </p>
         <div className="mt-8 flex justify-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
+          <div className="flex items-center space-x-2 text-sm text-gray-400 dark:text-gray-500">
             <Star className="h-4 w-4" />
             <span>Organize</span>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
+          <div className="flex items-center space-x-2 text-sm text-gray-400 dark:text-gray-500">
             <CheckCircle className="h-4 w-4" />
             <span>Complete</span>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
+          <div className="flex items-center space-x-2 text-sm text-gray-400 dark:text-gray-500">
             <Calendar className="h-4 w-4" />
             <span>Achieve</span>
           </div>
@@ -56,14 +56,14 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
   };
 
   const getPriorityColor = (dueDate, status) => {
-    if (status === 'completed') return 'from-green-50 to-emerald-50 border-green-200';
+    if (status === 'completed') return 'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700';
     
     const daysUntil = getDaysUntilDue(dueDate);
-    if (daysUntil === null) return 'from-blue-50 to-indigo-50 border-blue-200';
-    if (daysUntil < 0) return 'from-red-50 to-pink-50 border-red-200';
-    if (daysUntil <= 1) return 'from-orange-50 to-yellow-50 border-orange-200';
-    if (daysUntil <= 3) return 'from-yellow-50 to-amber-50 border-yellow-200';
-    return 'from-blue-50 to-indigo-50 border-blue-200';
+    if (daysUntil === null) return 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700';
+    if (daysUntil < 0) return 'from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-red-200 dark:border-red-700';
+    if (daysUntil <= 1) return 'from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-orange-200 dark:border-orange-700';
+    if (daysUntil <= 3) return 'from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-200 dark:border-yellow-700';
+    return 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700';
   };
 
   return (
@@ -83,27 +83,27 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
             {/* Priority indicator */}
             <div className="absolute top-4 right-4 flex items-center space-x-2">
               {isTaskOverdue && task.status !== 'completed' && (
-                <div className="flex items-center space-x-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold">
+                <div className="status-badge overdue">
                   <AlertTriangle className="h-3 w-3" />
                   <span>Overdue</span>
                 </div>
               )}
-              <div className={`w-3 h-3 rounded-full ${
+              <div className={`priority-indicator ${
                 task.status === 'completed' 
-                  ? 'bg-green-400 shadow-lg shadow-green-200' 
+                  ? 'completed' 
                   : isTaskOverdue 
-                    ? 'bg-red-400 shadow-lg shadow-red-200 animate-pulse' 
-                    : 'bg-blue-400 shadow-lg shadow-blue-200'
+                    ? 'high' 
+                    : 'medium'
               }`}></div>
             </div>
             
             <div className="flex items-start space-x-4">
               <button
                 onClick={() => onToggleStatus(task)}
-                className={`mt-1 flex-shrink-0 transition-all duration-300 transform hover:scale-125 ${
+                className={`mt-1 flex-shrink-0 transition-all duration-300 transform hover:scale-125 focus-ring rounded-lg ${
                   task.status === 'completed'
-                    ? 'text-green-600 hover:text-green-700 drop-shadow-lg'
-                    : 'text-gray-400 hover:text-blue-600'
+                    ? 'text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 drop-shadow-lg'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400'
                 }`}
               >
                 {task.status === 'completed' ? (
@@ -116,8 +116,8 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
               <div className="flex-1 min-w-0">
                 <h3 className={`text-lg font-bold mb-3 transition-all duration-200 ${
                   task.status === 'completed' 
-                    ? 'text-gray-500 line-through' 
-                    : 'text-gray-900'
+                    ? 'text-gray-500 dark:text-gray-400 line-through' 
+                    : 'text-gray-900 dark:text-gray-100'
                 }`}>
                   {task.title}
                 </h3>
@@ -125,15 +125,15 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
                 {task.description && (
                   <p className={`text-sm mb-4 leading-relaxed ${
                     task.status === 'completed' 
-                      ? 'text-gray-400' 
-                      : 'text-gray-600'
+                      ? 'text-gray-400 dark:text-gray-500' 
+                      : 'text-gray-600 dark:text-gray-300'
                   }`}>
                     {task.description}
                   </p>
                 )}
 
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-1 text-xs text-gray-500">
+                  <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
                     <Clock className="h-3 w-3" />
                     <span>Created {formatDate(task.created_at)}</span>
                   </div>
@@ -141,12 +141,12 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
                   {task.due_date && (
                     <div className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold ${
                       isTaskOverdue && task.status !== 'completed'
-                        ? 'bg-red-100 text-red-800 border border-red-200' 
+                        ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700' 
                         : task.status === 'completed'
-                          ? 'bg-green-100 text-green-800 border border-green-200'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700'
                           : daysUntil <= 1
-                            ? 'bg-orange-100 text-orange-800 border border-orange-200'
-                            : 'bg-blue-100 text-blue-800 border border-blue-200'
+                            ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-700'
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
                     }`}>
                       <Calendar className="h-3 w-3" />
                       <span>Due {formatDate(task.due_date)}</span>
@@ -165,10 +165,10 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
                 </div>
 
                 <div className="mt-4">
-                  <span className={`inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold shadow-sm ${
+                  <span className={`status-badge ${
                     task.status === 'completed'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                      : 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white'
+                      ? 'completed'
+                      : 'pending'
                   }`}>
                     {task.status === 'completed' ? '✓ Completed' : '⏳ In Progress'}
                   </span>
@@ -182,7 +182,7 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
             }`}>
               <button
                 onClick={() => onEditTask(task)}
-                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 transform hover:scale-110 shadow-lg"
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 transform hover:scale-110 shadow-lg focus-ring"
                 title="Edit task"
               >
                 <Edit className="h-4 w-4" />
@@ -190,7 +190,7 @@ const TaskList = ({ tasks, onToggleStatus, onEditTask, onDeleteTask }) => {
               
               <button
                 onClick={() => onDeleteTask(task.id)}
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 transform hover:scale-110 shadow-lg"
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-200 transform hover:scale-110 shadow-lg focus-ring"
                 title="Delete task"
               >
                 <Trash2 className="h-4 w-4" />

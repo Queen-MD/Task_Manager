@@ -110,15 +110,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen transition-colors duration-300">
       <Header onAddTask={() => setShowTaskForm(true)} />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl font-bold gradient-text mb-2">
             Welcome back, {user?.name}!
           </h1>
-          <p className="text-gray-600 text-lg">Manage your tasks efficiently and stay productive</p>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">Manage your tasks efficiently and stay productive</p>
         </div>
 
         <FilterTabs 

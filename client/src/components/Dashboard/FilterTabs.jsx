@@ -27,7 +27,7 @@ const FilterTabs = ({ activeFilter, onFilterChange, taskCounts }) => {
 
   return (
     <div className="mb-8">
-      <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-gray-200/50">
+      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
         <nav className="flex space-x-2">
           {filters.map((filter) => {
             const IconComponent = filter.icon;
@@ -40,19 +40,19 @@ const FilterTabs = ({ activeFilter, onFilterChange, taskCounts }) => {
                 className={`nav-tab flex-1 ${isActive ? 'active' : ''}`}
               >
                 <div className="flex items-center justify-center space-x-3">
-                  <div className={`p-2 rounded-lg ${isActive ? 'bg-white/20' : 'bg-gray-100'}`}>
-                    <IconComponent className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+                  <div className={`p-2 rounded-lg ${isActive ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-700'}`}>
+                    <IconComponent className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`} />
                   </div>
                   <div className="text-left">
                     <div className="font-semibold">{filter.label}</div>
-                    <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
                       {filter.count} tasks
                     </div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                     isActive 
                       ? 'bg-white/20 text-white' 
-                      : 'bg-gray-100 text-gray-600'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                   }`}>
                     {filter.count}
                   </div>
