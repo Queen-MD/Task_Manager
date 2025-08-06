@@ -25,10 +25,13 @@ const Dashboard = () => {
 
   const fetchTasks = async () => {
     try {
+      console.log('Fetching tasks...');
       const response = await axios.get('/tasks');
+      console.log('Tasks fetched successfully:', response.data);
       setTasks(response.data);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error fetching tasks:', error.response?.data || error.message);
+      // Don't show error to user on initial load, just log it
     } finally {
       setLoading(false);
     }

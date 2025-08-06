@@ -16,68 +16,77 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set axios base URL
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    axios.defaults.baseURL = API_BASE_URL;
+    const initializeAuth = async () => {
+      try {
+        // Set axios base URL
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        axios.defaults.baseURL = API_BASE_URL;
+        
+        console.log('API Base URL:', API_BASE_URL);
     
-    // Add request interceptor for debugging
-    axios.interceptors.request.use(
-      (config) => {
-        console.log('Making request:', config.method?.toUpperCase(), config.url);
-        return config;
-      },
-      (error) => {
-        console.error('Request error:', error);
-        return Promise.reject(error);
-      }
-    );
-
-    // Add response interceptor for debugging
-    axios.interceptors.response.use(
-      (response) => {
-        console.log('Response received:', response.status, response.config.url);
-        return response;
-      },
-      (error) => {
-        console.error('Response error:', error.response?.status, error.response?.data || error.message);
-        return Promise.reject(error);
-      }
-    );
-    
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Verify token validity by making a request
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        try {
-          setUser(JSON.parse(userData));
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-        }
-      }
-      
-      // Verify token is still valid
-      axios.get('/tasks')
-        .then(() => {
-          console.log('Token is valid');
-        })
-        .catch((error) => {
-          if (error.response?.status === 401) {
-            console.log('Token invalid, clearing auth data');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            delete axios.defaults.headers.common['Authorization'];
-            setUser(null);
+        // Add request interceptor for debugging
+        axios.interceptors.request.use(
+          (config) => {
+            console.log('Making request:', config.method?.toUpperCase(), config.url);
+            return config;
+          },
+          (error) => {
+            console.error('Request error:', error);
+            return Promise.reject(error);
           }
-        })
-        .finally(() => setLoading(false));
-    } else {
-      console.log('No token found');
-      setLoading(false);
-    }
+        );
+
+        // Add response interceptor for debugging
+        axios.interceptors.response.use(
+          (response) => {
+            console.log('Response received:', response.status, response.config.url);
+            return response;
+          },
+          (error) => {
+            console.error('Response error:', error.response?.status, error.response?.data || error.message);
+            return Promise.reject(error);
+          }
+        );
+    
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          // Verify token validity by making a request
+          const userData = localStorage.getItem('user');
+          if (userData) {
+            try {
+              setUser(JSON.parse(userData));
+            } catch (error) {
+              console.error('Error parsing user data:', error);
+              localStorage.removeItem('user');
+              localStorage.removeItem('token');
+            }
+          }
+          
+          // Verify token is still valid
+          try {
+            await axios.get('/tasks');
+            console.log('Token is valid');
+          } catch (error) {
+            if (error.response?.status === 401) {
+              console.log('Token invalid, clearing auth data');
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              delete axios.defaults.headers.common['Authorization'];
+              setUser(null);
+            }
+          }
+        } else {
+          console.log('No token found');
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email, password) => {

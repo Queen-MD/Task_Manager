@@ -5,6 +5,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import AdminPanel from './components/Admin/AdminPanel';
+import DebugPage from './components/Debug/DebugPage';
 import { useEffect } from 'react';
 
 // Loading component
@@ -22,6 +23,23 @@ function LoadingSpinner() {
 function App() {
   useEffect(() => {
     console.log('App component mounted');
+    
+    // Test API connection
+    const testConnection = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/health');
+        if (response.ok) {
+          console.log('Backend connection successful');
+        } else {
+          console.error('Backend connection failed:', response.status);
+        }
+      } catch (error) {
+        console.error('Backend connection error:', error);
+        console.log('Make sure your backend server is running on http://localhost:5000');
+      }
+    };
+    
+    testConnection();
   }, []);
 
   return (
@@ -32,6 +50,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/debug" element={<DebugPage />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
