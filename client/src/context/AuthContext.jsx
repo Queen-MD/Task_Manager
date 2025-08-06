@@ -18,13 +18,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Set axios base URL
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        axios.defaults.baseURL = API_BASE_URL;
+        console.log('Initializing auth...');
         
-        console.log('API Base URL:', API_BASE_URL);
-    
-        // Add request interceptor for debugging
+        // Set axios base URL - try proxy first, then direct
+        axios.defaults.baseURL = '/api';
+        
+        // Add request interceptor
         axios.interceptors.request.use(
           (config) => {
             console.log('Making request:', config.method?.toUpperCase(), config.url);
@@ -36,7 +35,7 @@ export const AuthProvider = ({ children }) => {
           }
         );
 
-        // Add response interceptor for debugging
+        // Add response interceptor
         axios.interceptors.response.use(
           (response) => {
             console.log('Response received:', response.status, response.config.url);
@@ -44,36 +43,32 @@ export const AuthProvider = ({ children }) => {
           },
           (error) => {
             console.error('Response error:', error.response?.status, error.response?.data || error.message);
+            
+            // If proxy fails, try direct connection
+            if (error.code === 'ECONNREFUSED' || error.response?.status === 404) {
+              console.log('Proxy failed, trying direct connection...');
+              axios.defaults.baseURL = 'http://localhost:5000/api';
+            }
+            
             return Promise.reject(error);
           }
         );
     
         const token = localStorage.getItem('token');
         if (token) {
+          console.log('Found existing token');
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          // Verify token validity by making a request
+          
           const userData = localStorage.getItem('user');
           if (userData) {
             try {
-              setUser(JSON.parse(userData));
+              const parsedUser = JSON.parse(userData);
+              setUser(parsedUser);
+              console.log('User loaded from localStorage:', parsedUser.email);
             } catch (error) {
               console.error('Error parsing user data:', error);
               localStorage.removeItem('user');
               localStorage.removeItem('token');
-            }
-          }
-          
-          // Verify token is still valid
-          try {
-            await axios.get('/tasks');
-            console.log('Token is valid');
-          } catch (error) {
-            if (error.response?.status === 401) {
-              console.log('Token invalid, clearing auth data');
-              localStorage.removeItem('token');
-              localStorage.removeItem('user');
-              delete axios.defaults.headers.common['Authorization'];
-              setUser(null);
             }
           }
         } else {
@@ -83,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Auth initialization error:', error);
       } finally {
         setLoading(false);
+        console.log('Auth initialization complete');
       }
     };
 
